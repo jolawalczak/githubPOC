@@ -25,14 +25,14 @@ function getProject() {
 }
 
 module.exports = defineConfig({
-  testDir: './tests',
-  outputDir: 'results',
-  reporter: [['html', { outputFolder: 'results/html-report', open: 'never' }]],
-  use: {
-    baseURL: settings.baseURL,   // <- to jest kluczowe dla page.goto('/')
-    headless: settings.headless,
-    trace: 'on',
-    viewport: { width: 1920, height: 1080 },
-  },
-  projects: [getProject()],
+    testDir: './tests',
+    outputDir: 'results/test-results',
+    reporter: [['html', { outputFolder: 'results/html-report', open: 'never' }]],
+    use: {
+        baseURL: settings.baseURL,
+        headless: settings.headless,
+        trace: 'on',
+        viewport: { width: 1920, height: 1080 },
+    },
+    projects: [getProject()],
 });

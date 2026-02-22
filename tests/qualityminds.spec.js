@@ -11,12 +11,10 @@ function timestamp() {
 
 test('Open QualityMinds page and take screenshot', async ({ page }, testInfo) => {
 
-  // Wejście na baseURL ustawiony w playwright.config.js
   await page.goto('/', { waitUntil: 'networkidle' });
 
   const fileName = `qualityminds_${timestamp()}.png`;
 
-  // zapis w katalogu results/.../screenshots
   const screenshotPath = testInfo.outputPath(
     path.join('screenshots', fileName)
   );
@@ -26,7 +24,6 @@ test('Open QualityMinds page and take screenshot', async ({ page }, testInfo) =>
     fullPage: true
   });
 
-  // opcjonalnie – załącznik w HTML report
   await testInfo.attach('screenshot', {
     path: screenshotPath,
     contentType: 'image/png'
