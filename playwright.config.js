@@ -25,14 +25,27 @@ function getProject() {
 }
 
 module.exports = defineConfig({
-    testDir: './tests',
-    outputDir: 'results/test-results',
-    reporter: [['html', { outputFolder: 'results/html-report', open: 'never' }]],
-    use: {
-        baseURL: settings.baseURL,
-        headless: settings.headless,
-        trace: 'on',
-        viewport: { width: 1920, height: 1080 },
-    },
-    projects: [getProject()],
+  testDir: './tests',
+
+  // artefakty testów (trace/screenshoty itp.)
+  outputDir: 'results/test-results',
+
+  // ✅ reportery (logi + adnotacje w GitHub + HTML report)
+  reporter: [
+    ['list'],
+    ['github'],
+    ['html', { outputFolder: 'results/html-report', open: 'never' }],
+  ],
+
+  use: {
+    baseURL: settings.baseURL,
+
+    // ✅ na CI zawsze headless, lokalnie wg settings
+    headless: process.env.CI ? true : (settings.headless ?? true),
+
+    trace: 'on',
+    viewport: { width: 1920, height: 1080 },
+  },
+
+  projects: [getProject()],
 });
