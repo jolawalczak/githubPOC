@@ -6,9 +6,18 @@ on:
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
+    inputs:
+      browser:
+        description: "Choose browser"
+        required: true
+        default: "chrome"
+        type: choice
+        options:
+          - chrome
+          - firefox
 
 permissions:
-  contents: write   # potrzebne do publikacji na gh-pages
+  contents: write
 
 jobs:
   e2e:
@@ -31,6 +40,25 @@ jobs:
       - name: Install Playwright browsers (and OS deps)
         run: npx playwright install --with-deps
 
+      - name: Set test settings (browser from input or default)
+        shell: bash
+        run: |
+          BROWSER="${{ github.event.inputs.browser }}"
+          if [ -z "$BROWSER" ]; then
+            BROWSER="chrome"
+          fi
+
+          mkdir -p config
+          cat > config/e2e.settings.json <<EOF
+          {
+            "browser": "$BROWSER",
+            "headless": true,
+            "baseURL": "https://qualityminds.com/en/"
+          }
+          EOF
+
+          echo "Selected browser: $BROWSER"
+
       - name: Run Playwright tests
         run: npx playwright test
 
@@ -38,7 +66,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-results
+          name: playwright-results-${{ github.event.inputs.browser || 'chrome' }}
           path: results/
           retention-days: 14
 
@@ -55,4 +83,6 @@ jobs:
         run: |
           echo "## 📊 Playwright HTML Report" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "[Open Report](https://jolawalczak.github.io/githubPOC/)" >> $GITHUB_STEP_SUMMARY
+          echo "**Browser:** ${{ github.event.inputs.browser || 'chrome' }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "[Open Report](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/)" >> $GITHUB_STEP_SUMMARY
