@@ -49,3 +49,10 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: results/html-report
           publish_branch: gh-pages
+
+      - name: Add report link to summary
+        if: always()
+        run: |
+          echo "## 📊 Playwright HTML Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "[Open Report](https://jolawalczak.github.io/githubPOC/)" >> $GITHUB_STEP_SUMMARY
