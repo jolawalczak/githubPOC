@@ -67,9 +67,15 @@ jobs:
         with:
           path: results/html-report
 
-      - name: Deploy to GitHub Pages
+      - name: Deploy report to gh-pages (manual)
         if: always() && github.ref == 'refs/heads/main'
-        uses: actions/deploy-pages@v4
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: results/html-report
+          destination_dir: manual
+          keep_files: true
 
       - name: Add report link to summary
         if: always()
