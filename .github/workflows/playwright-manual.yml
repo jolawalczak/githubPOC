@@ -1,0 +1,79 @@
+name: Playwright Manual
+
+on:
+  workflow_dispatch:
+    inputs:
+      browser:
+        description: "Choose browser"
+        required: true
+        default: "chrome"
+        type: choice
+        options:
+          - chrome
+          - firefox
+
+permissions:
+  contents: write
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers (and OS deps)
+        run: npx playwright install --with-deps
+
+      - name: Set test settings (browser from input)
+        shell: bash
+        run: |
+          BROWSER="${{ github.event.inputs.browser }}"
+          mkdir -p config
+          cat > config/e2e.settings.json <<EOF
+          {
+            "browser": "$BROWSER",
+            "headless": true,
+            "baseURL": "https://qualityminds.com/en/"
+          }
+          EOF
+          echo "Selected browser: $BROWSER"
+
+      - name: Run Playwright tests
+        run: npx playwright test
+
+      - name: Upload results (trace, screenshots, report)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-results-${{ github.event.inputs.browser }}
+          path: results/
+          retention-days: 14
+
+      - name: Deploy HTML report to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: results/html-report
+          publish_branch: gh-pages
+
+      - name: Add report link to summary
+        if: always()
+        run: |
+          echo "## 📊 Playwright HTML Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Browser:** ${{ github.event.inputs.browser }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "[Open Report](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/)" >> $GITHUB_STEP_SUMMARY
