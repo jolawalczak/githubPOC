@@ -10,7 +10,27 @@
   "author": "",
   "license": "ISC",
   "type": "commonjs",
+    "dependencies": {
+    "@azure/identity": "^4.13.0",
+    "@azure/keyvault-secrets": "^4.10.0",
+    "@types/node": "^25.1.0",
+    "dotenv": "^17.2.3",
+    "imapflow": "^1.2.8",
+    "ioredis": "^5.9.2",
+    "mailparser": "^3.9.3",
+    "nunjucks": "^3.2.4",
+    "otplib": "^13.2.1",
+    "playwright": "^1.58.1",
+    "redis-memory-server": "^0.16.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
   "devDependencies": {
-    "@playwright/test": "^1.58.2"
+    "@alex_neo/playwright-azure-reporter": "latest",
+    "@playwright/test": "^1.58.2",
+    "@types/mailparser": "^3.4.6",
+    "cross-env": "^10.1.0",
+    "openapi-typescript": "^7.10.1",
+    "playwright-trx-reporter": "^1.0.10"
   }
 }
