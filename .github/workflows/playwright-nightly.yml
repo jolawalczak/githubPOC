@@ -28,8 +28,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Playwright browsers (and OS deps)
-        run: npx playwright install
+      - name: Install Playwright browsers and dependencies
+        run: npx playwright install --with-deps
 
       - name: Set test settings (nightly default browser)
         shell: bash
@@ -45,8 +45,11 @@ jobs:
           EOF
           echo "Nightly browser: $BROWSER"
 
+      - name: List detected tests
+        run: npx playwright test --list
+
       - name: Run Playwright tests
-        run: npx playwright test
+        run: npx playwright test --workers=1
 
       - name: Upload results (trace, screenshots, report)
         if: always()
@@ -79,4 +82,4 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Browser:** chrome" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "[Open Report](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/)" >> $GITHUB_STEP_SUMMARY
+          echo "[Open Report](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/nightly/)" >> $GITHUB_STEP_SUMMARY
